@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    build:
+    build: 
       context: ./docker/dev
       dockerfile: Dockerfile
     volumes:
@@ -11,12 +11,12 @@ services:
       - ./.go-cache:/go-cache
     working_dir: /app
     ports:
-      - "5005:5005"
+      - "5006:5006"
     env_file:
       - .env
     environment:
       GOCACHE: /go-cache
-    entrypoint: ["./docker/dev/entrypoint.sh", "./cmd/main.go", "http-server"]
+    entrypoint: ["./docker/dev/entrypoint.sh", "./cmd/main.go", "grpc-server"]
 
   migrate:
     image: migrate/migrate
