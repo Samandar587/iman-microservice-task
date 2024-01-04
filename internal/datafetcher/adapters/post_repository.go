@@ -1,6 +1,8 @@
 package adapters
 
 import (
+	"errors"
+	"fmt"
 	"golang-project-template/internal/datafetcher/domain"
 	"log"
 
@@ -32,4 +34,27 @@ func (postRepo *postRepository) Save(post *domain.Post) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (postRepo *postRepository) PageExists(page int) (bool, error) {
+	if postRepo.db == nil {
+		return false, errors.New("database connection is nil")
+	}
+
+	if page < 1 {
+		return false, fmt.Errorf("invalid page number: %d", page)
+	}
+	var exists bool
+	sqlStatement := `
+		SELECT 1
+		FROM posts
+		WHERE page = $1
+	`
+
+	err := postRepo.db.QueryRow(sqlStatement, page).Scan(&exists)
+	if err != nil {
+		log.Printf("Error executing query: %v\nSQL: %s\nPage: %d\n", err, sqlStatement, page)
+		return false, err
+	}
+	return exists, nil
 }
