@@ -24,13 +24,13 @@ func (p *Post) GetBody() string {
 	return p.body
 }
 
-func (p *Post) GetPage() string {
-	return p.GetPage()
+func (p *Post) GetPage() int {
+	return p.page
 }
 
 type PostRepository interface {
 	Save(post *Post) (int, error)
-	PageExists(page int) (bool, error)
+	UserIdExists(page int) (bool, error)
 }
 
 type PostProvider interface {
