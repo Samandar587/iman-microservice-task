@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package grpc;
+
+option go_package = "/pb";
+
+service SavePostsService{
+    rpc CollectPosts (Request) returns (Response);
+}
+
+message Request {}
+message Response {
+    string message = 1;
+}

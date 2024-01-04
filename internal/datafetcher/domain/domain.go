@@ -42,3 +42,7 @@ func (p *Post) SetBody(body string) {
 type PostRepository interface {
 	Save(post *Post) (int, error)
 }
+
+type PostProvider interface {
+	GetPosts(page string) ([]Post, error)
+}
