@@ -10,18 +10,18 @@ import (
 	"github.com/jackc/pgx"
 )
 
-type postRep struct {
+type PostRepo struct {
 	db *pgx.Conn
 	f  domain.Factory
 }
 
 func NewpostRepsitory(db *pgx.Conn) domain.PostRepository {
-	return &postRep{
+	return &PostRepo{
 		db: db,
 	}
 }
 
-func (p *postRep) Create(newPost *domain.NewPost) (int, error) {
+func (p *PostRepo) Save(newPost *domain.NewPost) (int, error) {
 	var id int
 	sqlStatement := `
 		INSERT INTO posts (user_id, title, body, page)
@@ -40,7 +40,7 @@ func (p *postRep) Create(newPost *domain.NewPost) (int, error) {
 	return id, nil
 }
 
-func (p *postRep) FindByID(id int) (*domain.Post, error) {
+func (p *PostRepo) FindByID(id int) (*domain.Post, error) {
 	var original_post_id, user_id, page int
 	var title, body string
 	sqlStatement := `
@@ -69,7 +69,7 @@ func (p *postRep) FindByID(id int) (*domain.Post, error) {
 	return post, nil
 }
 
-func (p *postRep) FindByPage(page int) (*[]domain.Post, error) {
+func (p *PostRepo) FindByPage(page int) (*[]domain.Post, error) {
 
 	var id, original_post_id, user_id int
 	var title, body string
@@ -104,8 +104,8 @@ func (p *postRep) FindByPage(page int) (*[]domain.Post, error) {
 	return &allPost, nil
 }
 
-func (p *postRep) Update(id int, title, body string) (*domain.Post, error) {
-	var original_post_id, user_id, page int
+func (p *PostRepo) Update(id int, req *domain.NewPost) (*domain.Post, error) {
+	var original_post_id, user_id int
 
 	sqlStatement := `
 		UPDATE posts
@@ -115,9 +115,9 @@ func (p *postRep) Update(id int, title, body string) (*domain.Post, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := p.db.ExecEx(ctx, sqlStatement, nil, title, body, id)
+	_, err := p.db.ExecEx(ctx, sqlStatement, nil, req.Title, req.Body, id)
 	if err != nil {
-		log.Printf("Error while updating post: SQL:%v\n, TITLE:%v\n, BODY:%v\n, ID:%v\n, ERR:%v\n", sqlStatement, title, body, id, err)
+		log.Printf("Error while updating post: SQL:%v\n, TITLE:%v\n, BODY:%v\n, ID:%v\n, ERR:%v\n", sqlStatement, req.Title, req.Body, id, err)
 		return nil, fmt.Errorf("failed to get posts by page: %w", err)
 	}
 	sql := `
@@ -130,19 +130,19 @@ func (p *postRep) Update(id int, title, body string) (*domain.Post, error) {
 		&id,
 		&original_post_id,
 		&user_id,
-		&title,
-		&body,
-		&page,
+		&req.Title,
+		&req.Body,
+		&req.Page,
 	)
 	if err != nil {
 		log.Printf("Error while finding a post: SQL:%v\n, ID:%v\n, ERR:%v\n", sqlStatement, id, err)
 		return nil, fmt.Errorf("failed to get post: %w", err)
 	}
-	post := p.f.ParseToDomain(id, original_post_id, user_id, title, body, page)
+	post := p.f.ParseToDomain(id, original_post_id, user_id, req.Title, req.Body, req.Page)
 	return post, nil
 }
 
-func (p *postRep) Delete(id int) (string, error) {
+func (p *PostRepo) Delete(id int) (string, error) {
 	if id < 0 {
 		return "", fmt.Errorf("invalid post ID: %d", id)
 	}
