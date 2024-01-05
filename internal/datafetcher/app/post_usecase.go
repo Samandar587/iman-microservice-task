@@ -59,11 +59,11 @@ func (p *postUsecase) CollectPosts() error {
 	}
 
 	for _, post := range allPosts {
-		exists, err := p.postRepository.UserIdExists(post.GetUserID())
+		exists, err := p.postRepository.IdExists(post.GetOriginalPostID())
 
 		if err != nil {
-			log.Printf("Error checking page existence: %v", err)
-			return errors.New("Unable to check page existence at the moment. Please try again later!")
+			log.Printf("Error checking original post id existence: %v", err)
+			return errors.New("Unable to check original post id existence at the moment. Please try again later!")
 		}
 
 		if !exists {
@@ -73,9 +73,8 @@ func (p *postUsecase) CollectPosts() error {
 				return errors.New("Unable to save the data into database. Please, try again later!")
 			}
 		} else {
-			log.Println("warning: post with user id already exists")
+			log.Println("warning: post with original post id already exists")
 		}
-
 	}
 
 	return nil

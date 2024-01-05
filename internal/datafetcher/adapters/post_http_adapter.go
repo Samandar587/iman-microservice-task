@@ -49,7 +49,7 @@ func (h httpClient) GetPosts(page string) ([]domain.Post, error) {
 	var postList []domain.Post
 	json.Unmarshal(resData, &response)
 	for _, post := range response.Data {
-		domainPost := h.f.ParseToDomain(post.UserID, post.Title, post.Body, response.Meta.Pagination.Page)
+		domainPost := h.f.ParseToDomain(post.ID, post.UserID, post.Title, post.Body, response.Meta.Pagination.Page)
 		postList = append(postList, *domainPost)
 	}
 	return postList, nil

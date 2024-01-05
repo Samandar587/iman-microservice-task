@@ -44,7 +44,7 @@ func RunGrpcServer() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	fmt.Println("listeing on port :5006")
+	fmt.Println("listening on port :5006")
 
 	s := grpc.NewServer()
 
