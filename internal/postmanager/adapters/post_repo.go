@@ -69,41 +69,6 @@ func (p *PostRepo) FindByID(id int) (*domain.Post, error) {
 	return post, nil
 }
 
-func (p *PostRepo) FindByPage(page int) (*[]domain.Post, error) {
-
-	var id, original_post_id, user_id int
-	var title, body string
-	var allPost []domain.Post
-	sqlStatement := `
-		SELECT *
-		FROM posts
-		WHERE page = $1
-	`
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	rows, err := p.db.QueryEx(ctx, sqlStatement, nil, page)
-	if err != nil {
-		log.Printf("Error while finding a post: SQL:%v\n, PAGE:%v\n, ERR:%v\n", sqlStatement, page, err)
-		return nil, fmt.Errorf("failed to get posts by page: %w", err)
-	}
-
-	for rows.Next() {
-		rows.Scan(
-			&id,
-			&original_post_id,
-			&user_id,
-			&title,
-			&body,
-			&page,
-		)
-		post := p.f.ParseToDomain(id, original_post_id, user_id, title, body, page)
-		allPost = append(allPost, *post)
-	}
-
-	return &allPost, nil
-}
-
 func (p *PostRepo) Update(id int, req *domain.NewPost) (*domain.Post, error) {
 	var original_post_id, user_id int
 

@@ -19,7 +19,6 @@ type NewPost struct {
 type PostRepository interface {
 	Save(newPost *NewPost) (int, error)
 	FindByID(id int) (*Post, error)
-	FindByPage(page int) (*[]Post, error)
 	Update(id int, req *NewPost) (*Post, error)
 	Delete(id int) (string, error)
 }
