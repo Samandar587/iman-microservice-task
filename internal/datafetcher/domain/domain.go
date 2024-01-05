@@ -1,15 +1,20 @@
 package domain
 
 type Post struct {
-	id      int
-	user_id int
-	title   string
-	body    string
+	id               int
+	original_post_id int
+	user_id          int
+	title            string
+	body             string
+	page             int
 }
 
 // Getters
 func (p *Post) GetID() int {
 	return p.id
+}
+func (p *Post) GetOriginalPostID() int {
+	return p.original_post_id
 }
 func (p *Post) GetUserID() int {
 	return p.user_id
@@ -23,24 +28,13 @@ func (p *Post) GetBody() string {
 	return p.body
 }
 
-// Setters
-func (p *Post) SetID(id int) {
-	p.id = id
-}
-func (p *Post) SetUserID(user_id int) {
-	p.user_id = user_id
-}
-
-func (p *Post) SetTitle(title string) {
-	p.title = title
-}
-
-func (p *Post) SetBody(body string) {
-	p.body = body
+func (p *Post) GetPage() int {
+	return p.page
 }
 
 type PostRepository interface {
 	Save(post *Post) (int, error)
+	IdExists(original_post_id int) (bool, error)
 }
 
 type PostProvider interface {

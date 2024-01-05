@@ -4,7 +4,6 @@ import (
 	"context"
 	"golang-project-template/internal/datafetcher/app"
 	"golang-project-template/internal/datafetcher/ports/grpc/proto/pb"
-	"log"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,7 +23,6 @@ func NewDataFetcherServer(postUsecase app.PostUsecase) *server {
 func (s *server) CollectPosts(ctx context.Context, req *pb.Request) (*pb.Response, error) {
 	err := s.postUsecase.CollectPosts()
 	if err != nil {
-		log.Printf("Error while collecting posts: %v", err.Error())
 		return &pb.Response{}, status.Error(codes.Internal, "error collecting posts: "+err.Error())
 	}
 

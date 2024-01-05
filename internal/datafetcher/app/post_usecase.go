@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"golang-project-template/internal/datafetcher/domain"
 	"log"
 	"strconv"
@@ -58,10 +59,21 @@ func (p *postUsecase) CollectPosts() error {
 	}
 
 	for _, post := range allPosts {
-		_, err := p.postRepository.Save(&post)
+		exists, err := p.postRepository.IdExists(post.GetOriginalPostID())
+
 		if err != nil {
-			log.Println("internal error: " + err.Error())
-			return err
+			log.Printf("Error checking original post id existence: %v", err)
+			return errors.New("Unable to check original post id existence at the moment. Please try again later!")
+		}
+
+		if !exists {
+			_, err = p.postRepository.Save(&post)
+			if err != nil {
+				log.Printf("Error: " + err.Error())
+				return errors.New("Unable to save the data into database. Please, try again later!")
+			}
+		} else {
+			log.Println("warning: post with original post id already exists")
 		}
 	}
 
