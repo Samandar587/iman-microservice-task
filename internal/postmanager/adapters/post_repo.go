@@ -2,6 +2,8 @@ package adapters
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"golang-project-template/internal/postmanager/domain"
 	"log"
@@ -15,7 +17,7 @@ type PostRepo struct {
 	f  domain.Factory
 }
 
-func NewpostRepsitory(db *pgx.Conn) domain.PostRepository {
+func NewpostRepsitory(db *pgx.Conn) *PostRepo {
 	return &PostRepo{
 		db: db,
 	}
@@ -61,6 +63,9 @@ func (p *PostRepo) FindByID(id int) (*domain.Post, error) {
 		&page,
 	)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("post not found: %w", err)
+		}
 		log.Printf("Error while finding a post: SQL:%v\n, ID:%v\n, ERR:%v\n", sqlStatement, id, err)
 		return nil, fmt.Errorf("failed to get post: %w", err)
 	}

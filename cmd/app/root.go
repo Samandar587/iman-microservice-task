@@ -11,15 +11,23 @@ import (
 var rootCmd = &cobra.Command{Use: "run-grpc"}
 
 // command to run grpc server
-var userGrpcServerCmd = &cobra.Command{
+var dataFetcherGrpcCmd = &cobra.Command{
 	Use: "grpc-server",
 	Run: func(cmd *cobra.Command, args []string) {
-		servers.RunGrpcServer()
+		servers.RunDataFetcherGrpcServer()
+	},
+}
+
+var postManagerGrpcCmd = &cobra.Command{
+	Use: "post-manager-grpc-server",
+	Run: func(cmd *cobra.Command, args []string) {
+		servers.RunPostManagerGrpcServer()
 	},
 }
 
 func Execute() {
-	rootCmd.AddCommand(userGrpcServerCmd)
+	rootCmd.AddCommand(dataFetcherGrpcCmd)
+	rootCmd.AddCommand(postManagerGrpcCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "error while executing your CLI '%s'", err)
