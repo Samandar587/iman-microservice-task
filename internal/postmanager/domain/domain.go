@@ -13,12 +13,13 @@ type NewPost struct {
 	User_id int
 	Title   string
 	Body    string
+	Page    int
 }
 
 type PostRepository interface {
 	Create(newPost *NewPost) (int, error)
 	FindByID(id int) (*Post, error)
 	FindByPage(page int) (*[]Post, error)
-	Update(id int) (*Post, error)
+	Update(id int, title, body string) (*Post, error)
 	Delete(id int) (string, error)
 }
