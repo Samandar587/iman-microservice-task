@@ -25,7 +25,8 @@ func NewDB() *Config {
 
 	config.App = getEnv("APP", "iman-microservice-task")
 	config.Environment = getEnv("ENVIRONMENT", "develop")
-	config.LogLevel = getEnv("RPC_PORT", ":5005")
+	config.DataFetcherRPCPort = getEnv("DATAFETCHER_RPC_PORT", "5006")
+	config.PostManagerRPCPort = getEnv("POSTMANAGER_RPC_PORT", "5007")
 	config.HTTPPort = getEnv("HTTP_PORT", ":5005")
 
 	config.DB.Host = getEnv("POSTGRES_HOST", "localhost")

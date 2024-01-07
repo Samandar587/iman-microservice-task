@@ -63,6 +63,7 @@ func RunPostManagerGrpcServer() {
 		dbInfo.DB.User,
 		dbInfo.DB.Password,
 	)
+
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
