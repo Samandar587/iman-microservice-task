@@ -7,6 +7,7 @@ import (
 	"golang-project-template/internal/datafetcher/app"
 	server "golang-project-template/internal/datafetcher/ports/grpc"
 	"golang-project-template/internal/datafetcher/ports/grpc/proto/pb"
+	"golang-project-template/internal/pkg/config"
 
 	postManagerAdapers "golang-project-template/internal/postmanager/adapters"
 	postManagerApp "golang-project-template/internal/postmanager/app"
@@ -15,7 +16,6 @@ import (
 	"net"
 
 	"log"
-	"os"
 
 	"google.golang.org/grpc"
 )
@@ -28,12 +28,15 @@ func RunGRPCServerOnAddr(addr string, registerServer func(server *grpc.Server)) 
 */
 
 func RunDataFetcherGrpcServer() {
+
+	var dbInfo = config.NewDB()
+
 	db, err := common.ConnectToDb(
-		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_DATABASE"),
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
+		dbInfo.DB.Host,
+		dbInfo.DB.Port,
+		dbInfo.DB.Database,
+		dbInfo.DB.User,
+		dbInfo.DB.Password,
 	)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
@@ -60,12 +63,14 @@ func RunDataFetcherGrpcServer() {
 }
 
 func RunPostManagerGrpcServer() {
+	var dbInfo = config.NewDB()
+
 	db, err := common.ConnectToDb(
-		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_DATABASE"),
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
+		dbInfo.DB.Host,
+		dbInfo.DB.Port,
+		dbInfo.DB.Database,
+		dbInfo.DB.User,
+		dbInfo.DB.Password,
 	)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)

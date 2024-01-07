@@ -1,9 +1,9 @@
-package grpc
+package ports
 
 import (
 	"context"
 	"golang-project-template/internal/datafetcher/app"
-	"golang-project-template/internal/datafetcher/ports/grpc/proto/pb"
+	"golang-project-template/internal/datafetcher/ports/proto/pb"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
