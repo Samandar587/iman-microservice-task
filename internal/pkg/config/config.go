@@ -3,11 +3,12 @@ package config
 import "os"
 
 type Config struct {
-	App         string
-	Environment string
-	LogLevel    string
-	RPCPort     string
-	HTTPPort    string
+	App                string
+	Environment        string
+	LogLevel           string
+	DataFetcherRPCPort string
+	PostManagerRPCPort string
+	HTTPPort           string
 
 	DB struct {
 		Host     string

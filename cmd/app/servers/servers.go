@@ -2,18 +2,18 @@ package servers
 
 import (
 	"fmt"
-	"golang-project-template/internal/common"
+	common "golang-project-template/internal/common/db"
 	"golang-project-template/internal/datafetcher/adapters"
 	"golang-project-template/internal/datafetcher/app"
-	server "golang-project-template/internal/datafetcher/ports/grpc"
-	"golang-project-template/internal/datafetcher/ports/grpc/proto/pb"
+	dataFetcherServer "golang-project-template/internal/datafetcher/ports"
+	dataFetcherPb "golang-project-template/internal/datafetcher/ports/proto/pb"
 	"golang-project-template/internal/pkg/config"
 
+	grpcCommon "golang-project-template/internal/common/grpc"
 	postManagerAdapers "golang-project-template/internal/postmanager/adapters"
 	postManagerApp "golang-project-template/internal/postmanager/app"
-	postManagerGrpc "golang-project-template/internal/postmanager/ports/grpc"
+	postManagerServer "golang-project-template/internal/postmanager/ports/grpc"
 	postManagerPb "golang-project-template/internal/postmanager/ports/grpc/proto/pb"
-	"net"
 
 	"log"
 
@@ -45,21 +45,12 @@ func RunDataFetcherGrpcServer() {
 	provider := adapters.NewPostProvider()
 	usecase := app.NewPostUsecase(repo, provider)
 
-	dataFetcherGrpcServer := server.NewDataFetcherServer(usecase)
+	addr := fmt.Sprintf(":%s", dbInfo.DataFetcherRPCPort)
+	grpcCommon.RunGRPCServerOnAddr(addr, func(server *grpc.Server) {
+		svc := dataFetcherServer.NewDataFetcherServer(usecase)
+		dataFetcherPb.RegisterSavePostsServiceServer(server, svc)
 
-	lisener, err := net.Listen("tcp", ":5006")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	fmt.Println("listening on port :5006")
-
-	s := grpc.NewServer()
-
-	pb.RegisterSavePostsServiceServer(s, dataFetcherGrpcServer)
-	if err := s.Serve(lisener); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	})
 }
 
 func RunPostManagerGrpcServer() {
@@ -77,19 +68,11 @@ func RunPostManagerGrpcServer() {
 	}
 	repo := postManagerAdapers.NewpostRepsitory(db)
 	usecase := postManagerApp.NewPostUsecase(repo)
-	grpcHandler := postManagerGrpc.NewPostManagerGrpcServer(usecase)
 
-	listener, err := net.Listen("tcp", ":5007")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	fmt.Println("listening on port: 5007")
-	s := grpc.NewServer()
-	postManagerPb.RegisterManagePostsServiceServer(s, grpcHandler)
-
-	if err := s.Serve(listener); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	addr := fmt.Sprintf(":%s", dbInfo.PostManagerRPCPort)
+	grpcCommon.RunGRPCServerOnAddr(addr, func(server *grpc.Server) {
+		svc := postManagerServer.NewPostManagerGrpcServer(usecase)
+		postManagerPb.RegisterManagePostsServiceServer(server, svc)
+	})
 
 }
