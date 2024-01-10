@@ -52,12 +52,13 @@ func (p *postUsecase) CollectPosts() error {
 	go func() {
 		wg.Wait()
 		close(postCh)
-		close(errCh)
 	}()
 
 	for post := range postCh {
 		allPosts = append(allPosts, post...)
 	}
+
+	close(errCh)
 
 	for err := range errCh {
 		if err != nil {
