@@ -45,7 +45,6 @@ func (p *postUsecase) CollectPosts() error {
 			}
 
 			postCh <- posts
-			allPosts = append(allPosts, posts...)
 		}(i)
 	}
 
