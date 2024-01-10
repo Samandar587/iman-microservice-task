@@ -27,13 +27,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-/*
-// GRPC servers
-func RunGRPCServerOnAddr(addr string, registerServer func(server *grpc.Server)) {
-
-}
-*/
-
 func RunDataFetcherGrpcServer() {
 
 	var dbInfo = config.NewDB()
