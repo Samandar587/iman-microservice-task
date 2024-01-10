@@ -35,7 +35,22 @@ services:
       GOCACHE: /go-cache
     entrypoint: ["./docker/dev/entrypoint.sh", "./cmd/main.go", "post-manager-grpc-server"]
 
-    
+  api-gateway-app:
+    build: 
+      context: ./docker/dev
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
+    working_dir: /app
+    ports:
+      - "5005:5005"
+    env_file:
+      - .env
+    environment:
+      GOCACHE: /go-cache
+    entrypoint: ["./docker/dev/entrypoint.sh", "./cmd/main.go", "api-gateway-server"]
 
   migrate:
     image: migrate/migrate
