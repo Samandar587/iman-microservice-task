@@ -27,6 +27,7 @@ func NewPostUsecase(postRepo domain.PostRepository, postProvider domain.PostProv
 func (p *postUsecase) CollectPosts() error {
 	var wg sync.WaitGroup
 	errCh := make(chan error, 1)
+	postCh := make(chan []domain.Post, 50)
 
 	var allPosts []domain.Post
 
@@ -43,14 +44,20 @@ func (p *postUsecase) CollectPosts() error {
 				return
 			}
 
+			postCh <- posts
 			allPosts = append(allPosts, posts...)
 		}(i)
 	}
 
 	go func() {
 		wg.Wait()
+		close(postCh)
 		close(errCh)
 	}()
+
+	for post := range postCh {
+		allPosts = append(allPosts, post...)
+	}
 
 	for err := range errCh {
 		if err != nil {
