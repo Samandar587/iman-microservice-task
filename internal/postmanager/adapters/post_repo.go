@@ -23,7 +23,7 @@ func NewpostRepsitory(db *pgx.Conn) *PostRepo {
 	}
 }
 
-func (p *PostRepo) Save(newPost *domain.NewPost) (int, error) {
+func (p *PostRepo) Save(newPost domain.NewPost) (int, error) {
 	var id int
 	sqlStatement := `
 		INSERT INTO posts (user_id, title, body, page)

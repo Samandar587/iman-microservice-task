@@ -23,13 +23,11 @@ func NewPostUsecase(postRepo domain.PostRepository, postProvider domain.PostProv
 		postProvider:   postProvider,
 	}
 }
-
 func (p *postUsecase) CollectPosts() error {
 	var wg sync.WaitGroup
 	errCh := make(chan error, 1)
-	postCh := make(chan []domain.Post, 50)
-
-	var allPosts []domain.Post
+	var mu sync.Mutex // Mutex for protecting concurrent writes to postList
+	var postList []domain.Post
 
 	for i := 1; i <= 50; i++ {
 		wg.Add(1)
@@ -44,20 +42,16 @@ func (p *postUsecase) CollectPosts() error {
 				return
 			}
 
-			postCh <- posts
+			mu.Lock()
+			postList = append(postList, posts...)
+			mu.Unlock()
 		}(i)
 	}
 
 	go func() {
 		wg.Wait()
-		close(postCh)
+		close(errCh)
 	}()
-
-	for post := range postCh {
-		allPosts = append(allPosts, post...)
-	}
-
-	close(errCh)
 
 	for err := range errCh {
 		if err != nil {
@@ -65,22 +59,11 @@ func (p *postUsecase) CollectPosts() error {
 		}
 	}
 
-	for _, post := range allPosts {
-		exists, err := p.postRepository.IdExists(post.GetOriginalPostID())
-
+	for _, post := range postList {
+		_, err := p.postRepository.Save(&post)
 		if err != nil {
-			log.Printf("Error checking original post id existence: %v", err)
-			return errors.New("Unable to check original post id existence at the moment. Please try again later!")
-		}
-
-		if !exists {
-			_, err = p.postRepository.Save(&post)
-			if err != nil {
-				log.Printf("Error: " + err.Error())
-				return errors.New("Unable to save the data into database. Please, try again later!")
-			}
-		} else {
-			log.Println("warning: post with original post id already exists")
+			log.Printf("Error: " + err.Error())
+			return errors.New("Unable to save the data into the database. Please try again later!")
 		}
 	}
 

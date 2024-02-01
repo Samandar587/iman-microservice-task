@@ -32,7 +32,6 @@ func NewClientService(fAddr, mAddr string) *ClientService {
 	}
 	fmt.Println("before fetcher client.....")
 	FetcherClient := fetcherpb.NewSavePostsServiceClient(fetcherConn)
-	fmt.Println("fetcherClient: ", FetcherClient)
 
 	managerConn, err := grpc.Dial(mAddr, opts...)
 	if err != nil {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"golang-project-template/internal/postmanager/app"
 	"golang-project-template/internal/postmanager/domain"
 	"golang-project-template/internal/postmanager/ports/grpc/proto/pb"
@@ -40,7 +39,6 @@ func (s *server) Create(ctx context.Context, req *pb.NewPostRequest) (*pb.Create
 }
 
 func (s *server) GetByID(ctx context.Context, req *pb.IdRequest) (*pb.PostResponse, error) {
-	fmt.Println("coming to getbyid. .....")
 	post, err := s.postUsecase.GetByID(int(req.Id))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

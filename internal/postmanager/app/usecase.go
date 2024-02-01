@@ -24,7 +24,7 @@ func NewPostUsecase(postRepo *adapters.PostRepo) PostUsecaseInterface {
 
 func (p *PostUsecase) Create(req domain.NewPost) (int, error) {
 
-	id, err := p.postRepo.Save(&req)
+	id, err := p.postRepo.Save(req)
 	if err != nil {
 		return 0, err
 	}

@@ -34,7 +34,6 @@ func (p *Post) GetPage() int {
 
 type PostRepository interface {
 	Save(post *Post) (int, error)
-	IdExists(original_post_id int) (bool, error)
 }
 
 type PostProvider interface {

@@ -28,7 +28,9 @@ func (postRepo *postRepository) Save(post *domain.Post) (int, error) {
 	sqlStatement := `
 	INSERT INTO posts (original_post_id, user_id, title, body, page)
 	VALUES ($1, $2, $3, $4, $5)
-	RETURNING id
+	ON CONFLICT (original_post_id) DO UPDATE 
+	SET original_post_id = EXCLUDED.original_post_id
+	RETURNING id;
 	`
 	err := postRepo.db.QueryRow(sqlStatement, post.GetOriginalPostID(), post.GetUserID(), post.GetTitle(), post.GetBody(), post.GetPage()).Scan(&id)
 	if err != nil {
@@ -37,29 +39,4 @@ func (postRepo *postRepository) Save(post *domain.Post) (int, error) {
 	}
 
 	return id, nil
-}
-
-func (postRepo *postRepository) IdExists(id int) (bool, error) {
-	if postRepo.db == nil {
-		return false, errors.New("database connection is nil")
-	}
-
-	if id < 1 {
-		return false, fmt.Errorf("invalid ID: %d", id)
-	}
-
-	var exists bool
-	sqlStatement := `
-		SELECT EXISTS (
-			SELECT 1
-			FROM posts
-			WHERE original_post_id = $1
-		)
-	`
-	err := postRepo.db.QueryRow(sqlStatement, id).Scan(&exists)
-	if err != nil {
-		log.Printf("Error executing query: %v\nSQL: %s\nPage: %d\n", err, sqlStatement, id)
-		return false, err
-	}
-	return exists, nil
 }

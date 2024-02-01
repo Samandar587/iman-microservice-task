@@ -2,7 +2,6 @@ package ports
 
 import (
 	"encoding/json"
-	"fmt"
 	"golang-project-template/internal/apigateway/app"
 	"net/http"
 	"strconv"
@@ -98,7 +97,6 @@ func (c *HttpServer) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error parsing request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println("id*: ", data.ID)
 	post, err := c.service.Update(&data)
 	if err != nil {
 		http.Error(w, "error updating post object: "+err.Error(), http.StatusBadGateway)

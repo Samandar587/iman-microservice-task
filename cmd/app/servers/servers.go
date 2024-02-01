@@ -30,7 +30,6 @@ import (
 func RunDataFetcherGrpcServer() {
 
 	var dbInfo = config.NewDB()
-
 	db, err := common.ConnectToDb(
 		dbInfo.DB.Host,
 		dbInfo.DB.Port,
@@ -81,7 +80,6 @@ func RunPostManagerGrpcServer() {
 func ApiGatewayServer() {
 	fetcherAddr := os.Getenv("DATAFETCHER_ADRESS")
 	managerAddr := os.Getenv("POSTMANAGER_ADRESS")
-	fmt.Println("fetcher rpc: ", fetcherAddr)
 
 	clients := client.NewClientService(fetcherAddr, managerAddr)
 	app := apiGatewayApp.NewUsecase(clients.FetcherClient, clients.ManagerClient)
